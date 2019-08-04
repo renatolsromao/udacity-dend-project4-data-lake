@@ -1,9 +1,9 @@
-# Sparkify Analytics Database & ETL
+# Sparkify Analytics Datalake
 
 ## Objective
 
-Provide a functional database with songs users are listening to,
-so the analytics team can work with.
+Provide a functional Data Lake on AWS S3 with songs users are 
+listening to. 
 
 ## Datasets
 
@@ -20,38 +20,26 @@ of that song.
 
 - Log Dataset: Activity from the music app. 
 
+## Files
+
+The dl.example.cfg file is the AWS configuration for the project.
+
+The script etl.py executes the steps necessary to read the S3
+data and create the datalake files and folder.
+
+ETL.ipynb describe in further details the steps used to create
+the datalake. 
+
 ## Running 
 
-To run the project you are going to need Pipenv. Pipenv is used 
-so you don't need to install the dependencies locally. 
+To run the project you are going to need PySpark or a docker 
+environment, docker configuration describe bellow.
+
+To run the script just use (inside docker container).
 
 ```commandline
-$ pipenv run python <file.py>
+$ python3 <file.py>
 ```
-
-## Starting
-
-There are two main scripts to run in order to create the database
-and importing the data. 
-
-The first one, "create_tables.py", will
-drop the tables if they exists and re-creating them. 
-
-```commandline
-$ pipenv run python create_tables.py
-```
-
-The second one, "etl.py", will load song and log data from the 
-datasets located on "data" folder and insert this date properly 
-on the tables previously created.
-
-```commandline
-$ pipenv run python etl.py
-```
-
-Both scripts use "sql_queries.py" in order to achieve the result.
-There are some auxiliary .ipynb files that were used to create
-the tables. 
 
 ## Docker Enviroment 
 
@@ -99,6 +87,38 @@ To run python script with container spark submit, use:
 $ docker exec pyspark_dend python3 <script>.py
 ```
 
+## Execute in production, using AWS EMR
+
+Use AWS EMR to execute the jobs in production.
+
+After creating a cluster send the script and cfg file to the 
+EMR Cluster using scp
+
+```commandline
+$ scp -i <cluster key> <script> <cluster user>@<cluster dns>:~/
+$ scp -i \~/Documents/pessoal/projetos.nosync/rlsr.pem etl.py hadoop@ec2-3-224-147-15.compute-1.amazonaws.com:~/
+```
+Connect to the cluster via ssh and execute spark-submit.
+
+```commandline
+$ ssh -i <cluster key> <cluster user>@<cluster dns>
+```
+
+Inside the Cluster find spark-submit and run the script.
+
+```commandline
+$ which spark-submit 
+$ apache-submit --master yarn <script.py>
+```
+
+You may have to change python version the EMR Cluster is using.
+Set the environment variable for that.
+
+```commandline
+$ which python3
+$ export PYSPARK_PYTHON=/usr/bin/python3
+```
+
 ## References
 
-- http://ondata.blog/articles/getting-started-apache-spark-pyspark-and-jupyter-in-a-docker-container/
+- [http://ondata.blog/articles/getting-started-apache-spark-pyspark-and-jupyter-in-a-docker-container/]
