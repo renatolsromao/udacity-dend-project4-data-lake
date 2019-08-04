@@ -1,0 +1,11 @@
+data
+dl.cfg
+
+.ipynb_checkpoints
+.ipython
+.jupyter
+.local
+.ivy2
+.cache
+.bash_history
+.idea
